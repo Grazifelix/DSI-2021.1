@@ -10,9 +10,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Welcome to Flutter',
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.white,
+            foregroundColor: Color.fromARGB(255, 81, 68, 255)),
+      ),
       home: RandomWords(),
     );
   }
@@ -44,6 +49,12 @@ class _RandomWordsState extends State<RandomWords> {
         ],
       ),
       body: _buildSuggestions(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _pushSaved,
+        tooltip: 'Change Vizualization',
+        child: const Icon(Icons.card_membership),
+        backgroundColor: Color.fromARGB(255, 81, 68, 255),
+      ),
     );
   }
 
@@ -101,7 +112,7 @@ class _RandomWordsState extends State<RandomWords> {
           style: _biggerFont,
         ),
         trailing: Icon(alreadySaved ? Icons.favorite : Icons.favorite_border,
-            color: alreadySaved ? Colors.red : null,
+            color: alreadySaved ? Color.fromARGB(255, 81, 68, 255) : null,
             semanticLabel: alreadySaved ? 'Remove from saved' : 'Save'),
         onTap: () {
           setState(() {
