@@ -35,6 +35,8 @@ class _RandomWordsState extends State<RandomWords> {
   final _biggerFont = const TextStyle(fontSize: 18.0);
   final _saved = <WordPair>[];
 
+  get child => null;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,9 +52,9 @@ class _RandomWordsState extends State<RandomWords> {
       ),
       body: _buildSuggestions(),
       floatingActionButton: FloatingActionButton(
-        onPressed: _pushSaved,
+        onPressed: _cardVizualizaton,
         tooltip: 'Change Vizualization',
-        child: const Icon(Icons.card_membership),
+        child: const Icon(Icons.auto_fix_normal_outlined),
         backgroundColor: Color.fromARGB(255, 81, 68, 255),
       ),
     );
@@ -123,5 +125,31 @@ class _RandomWordsState extends State<RandomWords> {
             }
           });
         });
+  }
+
+  void _cardVizualizaton() {
+    Navigator.of(context)
+        .push(MaterialPageRoute<void>(builder: (BuildContext context) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Card Vizualization'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.list),
+              onPressed: _pushSaved,
+              tooltip: 'Saved Suggestions',
+            ),
+          ],
+        ),
+        body: Container(
+          padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+          height: 220,
+          width: double.maxFinite,
+          child: Card(
+            elevation: 5,
+          ),
+        ),
+      );
+    }));
   }
 }
