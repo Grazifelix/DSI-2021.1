@@ -43,32 +43,31 @@ class _RandomWordsState extends State<RandomWords> {
     bool cardMode = false;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Startup Name Generator'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.list),
-            onPressed: _pushSaved,
-            tooltip: 'Saved Suggestions',
-          ),
-          IconButton(
-            onPressed: (() {
-              if (cardMode == false) {
-                cardMode = true;
-                debugPrint('$cardMode');
-              } else if (cardMode == true) {
-                cardMode = false;
-                debugPrint('$cardMode');
-              }
-            }),
-            tooltip:
-                cardMode ? 'List Vizualization' : 'Card Mode Vizualization',
-            icon: Icon(Icons.auto_fix_normal_outlined),
-          ),
-        ],
-      ),
-      body: _buildSuggestions(cardMode),
-    );
+        appBar: AppBar(
+          title: const Text('Startup Name Generator'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.list),
+              onPressed: _pushSaved,
+              tooltip: 'Saved Suggestions',
+            ),
+            IconButton(
+              onPressed: (() {
+                if (cardMode == false) {
+                  cardMode = true;
+                  debugPrint('$cardMode');
+                } else if (cardMode == true) {
+                  cardMode = false;
+                  debugPrint('$cardMode');
+                }
+              }),
+              tooltip:
+                  cardMode ? 'List Vizualization' : 'Card Mode Vizualization',
+              icon: Icon(Icons.auto_fix_normal_outlined),
+            ),
+          ],
+        ),
+        body: choose(cardMode));
   }
 
 //Favorites Screen
@@ -102,9 +101,17 @@ class _RandomWordsState extends State<RandomWords> {
     );
   }
 
+  Widget choose(cardMode) {
+    if (cardMode == false) {
+      return _buildSuggestions(cardMode);
+    } else {
+      return _cardVizualizaton();
+    }
+  }
+
 //Building Suggestions
-  Widget _buildSuggestions(bool mode) {
-    if (mode == false) {
+  Widget _buildSuggestions(bool cardMode) {
+    if (cardMode == true) {
       return ListView.builder(
         padding: const EdgeInsets.all(16.0),
         itemBuilder: (context, i) {
@@ -118,7 +125,21 @@ class _RandomWordsState extends State<RandomWords> {
         },
       );
     } else {
-      return _cardVizualizaton();
+      return GridView.builder(
+        padding: EdgeInsets.all(12),
+        gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2, crossAxisSpacing: 8, mainAxisSpacing: 8),
+        itemCount: _suggestions.length,
+        itemBuilder: (context, i) {
+          final index = i ~/ 2;
+          if (index >= _suggestions.length) {
+            _suggestions.addAll(generateWordPairs().take(10));
+          }
+          return Column(
+            children: [Text('sdasad'), Text('data')],
+          );
+        },
+      );
     }
   }
 
@@ -148,15 +169,16 @@ class _RandomWordsState extends State<RandomWords> {
 //Building cards vizualization
   Widget _cardVizualizaton() {
     return Scaffold(
-        body: GridView.count(
-      crossAxisCount: 2,
-      children: List.generate(100, (index) {
-        return Center(
-            child: Text(
-          'Item $index',
-          style: Theme.of(context).textTheme.headlineSmall,
-        ));
-      }),
+        body: GridView.builder(
+      padding: EdgeInsets.all(12),
+      gridDelegate:
+          new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+      itemCount: _suggestions.length,
+      itemBuilder: (context, index) {
+        return Column(
+          children: [],
+        );
+      },
     ));
   }
 }
