@@ -53,13 +53,15 @@ class _RandomWordsState extends State<RandomWords> {
             ),
             IconButton(
               onPressed: (() {
-                if (cardMode == false) {
-                  cardMode = true;
-                  debugPrint('$cardMode');
-                } else if (cardMode == true) {
-                  cardMode = false;
-                  debugPrint('$cardMode');
-                }
+                setState(() {
+                  if (cardMode == false) {
+                    cardMode = true;
+                    debugPrint('$cardMode');
+                  } else if (cardMode == true) {
+                    cardMode = false;
+                    debugPrint('$cardMode');
+                  }
+                });
               }),
               tooltip:
                   cardMode ? 'List Vizualization' : 'Card Mode Vizualization',
@@ -67,7 +69,7 @@ class _RandomWordsState extends State<RandomWords> {
             ),
           ],
         ),
-        body: choose(cardMode));
+        body: _buildSuggestions(cardMode));
   }
 
 //Favorites Screen
@@ -101,17 +103,9 @@ class _RandomWordsState extends State<RandomWords> {
     );
   }
 
-  Widget choose(cardMode) {
-    if (cardMode == false) {
-      return _buildSuggestions(cardMode);
-    } else {
-      return _cardVizualizaton();
-    }
-  }
-
 //Building Suggestions
   Widget _buildSuggestions(bool cardMode) {
-    if (cardMode == true) {
+    if (cardMode == false) {
       return ListView.builder(
         padding: const EdgeInsets.all(16.0),
         itemBuilder: (context, i) {
@@ -168,17 +162,15 @@ class _RandomWordsState extends State<RandomWords> {
 
 //Building cards vizualization
   Widget _cardVizualizaton() {
-    return Scaffold(
-        body: GridView.builder(
-      padding: EdgeInsets.all(12),
-      gridDelegate:
-          new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-      itemCount: _suggestions.length,
-      itemBuilder: (context, index) {
-        return Column(
-          children: [],
+    return GridView.count(
+      crossAxisCount: 2,
+      children: List.generate(10, (index) {
+        return Container(
+          child: Card(
+            color: Colors.grey,
+          ),
         );
-      },
-    ));
+      }),
+    );
   }
 }
