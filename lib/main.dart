@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
 
@@ -39,6 +40,8 @@ class _RandomWordsState extends State<RandomWords> {
 
   @override
   Widget build(BuildContext context) {
+    bool cardMode = false;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Startup Name Generator'),
@@ -48,18 +51,27 @@ class _RandomWordsState extends State<RandomWords> {
             onPressed: _pushSaved,
             tooltip: 'Saved Suggestions',
           ),
+          IconButton(
+            onPressed: (() {
+              if (cardMode == false) {
+                cardMode = true;
+                debugPrint('$cardMode');
+              } else if (cardMode == true) {
+                cardMode = false;
+                debugPrint('$cardMode');
+              }
+            }),
+            tooltip:
+                cardMode ? 'List Vizualization' : 'Card Mode Vizualization',
+            icon: Icon(Icons.auto_fix_normal_outlined),
+          ),
         ],
       ),
-      body: _buildSuggestions(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _cardVizualizaton,
-        tooltip: 'Change Vizualization',
-        child: const Icon(Icons.auto_fix_normal_outlined),
-        backgroundColor: Color.fromARGB(255, 81, 68, 255),
-      ),
+      body: _buildSuggestions(cardMode),
     );
   }
 
+//Favorites Screen
   void _pushSaved() {
     Navigator.of(context).push(
       MaterialPageRoute<void>(builder: (BuildContext context) {
@@ -90,21 +102,27 @@ class _RandomWordsState extends State<RandomWords> {
     );
   }
 
-  Widget _buildSuggestions() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16.0),
-      itemBuilder: (context, i) {
-        if (i.isOdd) return const Divider();
+//Building Suggestions
+  Widget _buildSuggestions(bool mode) {
+    if (mode == false) {
+      return ListView.builder(
+        padding: const EdgeInsets.all(16.0),
+        itemBuilder: (context, i) {
+          if (i.isOdd) return const Divider();
 
-        final index = i ~/ 2;
-        if (index >= _suggestions.length) {
-          _suggestions.addAll(generateWordPairs().take(10));
-        }
-        return _buildRow(_suggestions[index], index);
-      },
-    );
+          final index = i ~/ 2;
+          if (index >= _suggestions.length) {
+            _suggestions.addAll(generateWordPairs().take(10));
+          }
+          return _buildRow(_suggestions[index], index);
+        },
+      );
+    } else {
+      return _cardVizualizaton();
+    }
   }
 
+//Building list Rows
   Widget _buildRow(WordPair pair, int index) {
     final alreadySaved = _saved.contains(_suggestions[
         index]); //variável que verifica se o par de palavras já está dentro do conjunto _saved.
@@ -127,29 +145,18 @@ class _RandomWordsState extends State<RandomWords> {
         });
   }
 
-  void _cardVizualizaton() {
-    Navigator.of(context)
-        .push(MaterialPageRoute<void>(builder: (BuildContext context) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Card Vizualization'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.list),
-              onPressed: _pushSaved,
-              tooltip: 'Saved Suggestions',
-            ),
-          ],
-        ),
-        body: Container(
-          padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-          height: 220,
-          width: double.maxFinite,
-          child: Card(
-            elevation: 5,
-          ),
-        ),
-      );
-    }));
+//Building cards vizualization
+  Widget _cardVizualizaton() {
+    return Scaffold(
+        body: GridView.count(
+      crossAxisCount: 2,
+      children: List.generate(100, (index) {
+        return Center(
+            child: Text(
+          'Item $index',
+          style: Theme.of(context).textTheme.headlineSmall,
+        ));
+      }),
+    ));
   }
 }
