@@ -35,13 +35,12 @@ class _RandomWordsState extends State<RandomWords> {
   final _suggestions = <WordPair>[];
   final _biggerFont = const TextStyle(fontSize: 18.0);
   final _saved = <WordPair>[];
+  bool cardMode = false;
 
   get child => null;
 
   @override
   Widget build(BuildContext context) {
-    bool cardMode = false;
-
     return Scaffold(
         appBar: AppBar(
           title: const Text('Startup Name Generator'),
