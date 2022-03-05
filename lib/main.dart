@@ -118,21 +118,7 @@ class _RandomWordsState extends State<RandomWords> {
         },
       );
     } else {
-      return GridView.builder(
-        padding: EdgeInsets.all(12),
-        gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, crossAxisSpacing: 8, mainAxisSpacing: 8),
-        itemCount: _suggestions.length,
-        itemBuilder: (context, i) {
-          final index = i ~/ 2;
-          if (index >= _suggestions.length) {
-            _suggestions.addAll(generateWordPairs().take(10));
-          }
-          return Column(
-            children: [Text('sdasad'), Text('data')],
-          );
-        },
-      );
+      return _cardVizualizaton();
     }
   }
 
@@ -161,15 +147,23 @@ class _RandomWordsState extends State<RandomWords> {
 
 //Building cards vizualization
   Widget _cardVizualizaton() {
-    return GridView.count(
-      crossAxisCount: 2,
-      children: List.generate(10, (index) {
-        return Container(
-          child: Card(
-            color: Colors.grey,
-          ),
+    return GridView.builder(
+      padding: EdgeInsets.all(12),
+      gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2, crossAxisSpacing: 2, mainAxisSpacing: 2),
+      itemCount: _suggestions.length,
+      itemBuilder: (context, index) {
+        //final index = i ~/ 2;
+        if (index >= _suggestions.length) {
+          _suggestions.addAll(generateWordPairs().take(10));
+        }
+        return Column(
+          children: [
+            _buildRow(_suggestions[index], index)
+            //Text(_suggestions[index].asPascalCase),
+          ],
         );
-      }),
+      },
     );
   }
 }
