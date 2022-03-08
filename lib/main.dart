@@ -104,6 +104,7 @@ class _RandomWordsState extends State<RandomWords> {
 
 //Building Suggestions
   Widget _buildSuggestions(bool cardMode) {
+    print('list mode changed');
     if (cardMode == false) {
       return ListView.builder(
         padding: const EdgeInsets.all(16.0),
@@ -147,10 +148,14 @@ class _RandomWordsState extends State<RandomWords> {
 
 //Building cards vizualization
   Widget _cardVizualizaton() {
+    print('card mode changed');
     return GridView.builder(
       padding: EdgeInsets.all(12),
       gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2, crossAxisSpacing: 2, mainAxisSpacing: 2),
+          crossAxisCount: 2,
+          crossAxisSpacing: 2,
+          mainAxisSpacing: 2,
+          childAspectRatio: 8),
       itemCount: _suggestions.length,
       itemBuilder: (context, index) {
         //final index = i ~/ 2;
@@ -158,10 +163,7 @@ class _RandomWordsState extends State<RandomWords> {
           _suggestions.addAll(generateWordPairs().take(10));
         }
         return Column(
-          children: [
-            _buildRow(_suggestions[index], index)
-            //Text(_suggestions[index].asPascalCase),
-          ],
+          children: [_buildRow(_suggestions[index], index)],
         );
       },
     );
