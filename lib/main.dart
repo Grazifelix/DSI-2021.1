@@ -128,22 +128,41 @@ class _RandomWordsState extends State<RandomWords> {
     final alreadySaved = _saved.contains(_suggestions[
         index]); //variável que verifica se o par de palavras já está dentro do conjunto _saved.
     return ListTile(
-        title: Text(
-          _suggestions[index].asPascalCase,
-          style: _biggerFont,
-        ),
-        trailing: Icon(alreadySaved ? Icons.favorite : Icons.favorite_border,
-            color: alreadySaved ? Color.fromARGB(255, 81, 68, 255) : null,
-            semanticLabel: alreadySaved ? 'Remove from saved' : 'Save'),
-        onTap: () {
-          setState(() {
-            if (alreadySaved) {
-              _saved.remove(_suggestions[index]);
-            } else {
-              _saved.add(_suggestions[index]);
-            }
-          });
-        });
+      title: Text(
+        _suggestions[index].asPascalCase,
+        style: _biggerFont,
+      ),
+      onTap: () {
+        _editWordPair();
+      },
+      trailing: IconButton(
+          icon: Icon(alreadySaved ? Icons.favorite : Icons.favorite_border,
+              color: alreadySaved ? Color.fromARGB(255, 81, 68, 255) : null,
+              semanticLabel: alreadySaved ? 'Remove from saved' : 'Save'),
+          tooltip: "Favorite",
+          onPressed: () {
+            setState(() {
+              if (alreadySaved) {
+                _saved.remove(_suggestions[index]);
+              } else {
+                _saved.add(_suggestions[index]);
+              }
+            });
+          }),
+    );
+  }
+
+  void _editWordPair() {
+    Navigator.of(context)
+        .push(MaterialPageRoute<void>(builder: (BuildContext context) {
+      return Scaffold(
+          appBar: AppBar(
+            title: const Text("Edit WordPair"),
+          ),
+          body: Center(
+            child: Text("Página em construção"),
+          ));
+    }));
   }
 
 //Building cards vizualization
