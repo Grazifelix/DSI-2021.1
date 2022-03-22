@@ -37,8 +37,6 @@ class _RandomWordsState extends State<RandomWords> {
   final _saved = <WordPair>[];
   bool cardMode = false;
 
-  get child => null;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -125,31 +123,57 @@ class _RandomWordsState extends State<RandomWords> {
 
 //Building list Rows
   Widget _buildRow(WordPair pair, int index) {
-    final alreadySaved = _saved.contains(_suggestions[
-        index]); //variável que verifica se o par de palavras já está dentro do conjunto _saved.
-    return ListTile(
-      title: Text(
-        _suggestions[index].asPascalCase,
-        style: _biggerFont,
-      ),
-      onTap: () {
-        _editWordPair();
-      },
-      trailing: IconButton(
-          icon: Icon(alreadySaved ? Icons.favorite : Icons.favorite_border,
-              color: alreadySaved ? Color.fromARGB(255, 81, 68, 255) : null,
-              semanticLabel: alreadySaved ? 'Remove from saved' : 'Save'),
-          tooltip: "Favorite",
-          onPressed: () {
-            setState(() {
-              if (alreadySaved) {
-                _saved.remove(_suggestions[index]);
-              } else {
-                _saved.add(_suggestions[index]);
-              }
-            });
-          }),
-    );
+    final alreadySaved = _saved.contains(_suggestions[index]);
+    var color = Colors.transparent;
+    final item = pair
+        .asPascalCase; //variável que verifica se o par de palavras já está dentro do conjunto _saved.
+    return Dismissible(
+        key: Key(item),
+        direction: DismissDirection.endToStart,
+        onDismissed: (direction) {
+          setState(() {
+            if (alreadySaved) {
+              _saved.remove(_suggestions[index]);
+            }
+            _suggestions.removeAt(index);
+          });
+        },
+        background: Container(
+          color: Color.fromARGB(255, 81, 68, 255),
+          padding: EdgeInsets.all(8.0),
+          alignment: Alignment.centerRight,
+          child: Text(
+            "Excluir",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+            ),
+          ),
+        ),
+        child: ListTile(
+          title: Text(
+            _suggestions[index].asPascalCase,
+            style: _biggerFont,
+          ),
+          onTap: () {
+            _editWordPair();
+          },
+          trailing: IconButton(
+              icon: Icon(alreadySaved ? Icons.favorite : Icons.favorite_border,
+                  color: alreadySaved ? Color.fromARGB(255, 81, 68, 255) : null,
+                  semanticLabel: alreadySaved ? 'Remove from saved' : 'Save'),
+              tooltip: "Favorite",
+              hoverColor: color,
+              onPressed: () {
+                setState(() {
+                  if (alreadySaved) {
+                    _saved.remove(_suggestions[index]);
+                  } else {
+                    _saved.add(_suggestions[index]);
+                  }
+                });
+              }),
+        ));
   }
 
   void _editWordPair() {
