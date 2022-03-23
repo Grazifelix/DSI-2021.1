@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
 
@@ -19,7 +18,12 @@ class MyApp extends StatelessWidget {
             backgroundColor: Colors.white,
             foregroundColor: Color.fromARGB(255, 81, 68, 255)),
       ),
-      home: RandomWords(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const RandomWords(),
+        '/edit': ((context) => const EditScreen())
+      },
+      //home: RandomWords(),
     );
   }
 }
@@ -156,7 +160,7 @@ class _RandomWordsState extends State<RandomWords> {
             style: _biggerFont,
           ),
           onTap: () {
-            _editWordPair();
+            Navigator.pushNamed(context, '/edit');
           },
           trailing: IconButton(
               icon: Icon(alreadySaved ? Icons.favorite : Icons.favorite_border,
@@ -174,19 +178,6 @@ class _RandomWordsState extends State<RandomWords> {
                 });
               }),
         ));
-  }
-
-  void _editWordPair() {
-    Navigator.of(context)
-        .push(MaterialPageRoute<void>(builder: (BuildContext context) {
-      return Scaffold(
-          appBar: AppBar(
-            title: const Text("Edit WordPair"),
-          ),
-          body: Center(
-            child: Text("Página em construção"),
-          ));
-    }));
   }
 
 //Building cards vizualization
@@ -209,6 +200,29 @@ class _RandomWordsState extends State<RandomWords> {
           children: [_buildRow(_suggestions[index], index)],
         );
       },
+    );
+  }
+}
+
+class EditScreen extends StatelessWidget {
+  const EditScreen({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Second Screen'),
+      ),
+      body: Center(
+        child: ElevatedButton(
+          // Within the SecondScreen widget
+          onPressed: () {
+            // Navigate back to the first screen by popping the current route
+            // off the stack.
+            Navigator.pop(context);
+          },
+          child: const Text('Go back!'),
+        ),
+      ),
     );
   }
 }
