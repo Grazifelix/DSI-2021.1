@@ -208,6 +208,9 @@ class EditScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController firstWordController = TextEditingController();
+    TextEditingController secondWordController = TextEditingController();
+
     return Scaffold(
         appBar: AppBar(
           title: const Text('Second Screen'),
@@ -227,6 +230,7 @@ class EditScreen extends StatelessWidget {
                   }
                   return null;
                 },
+                controller: firstWordController,
               ),
               TextFormField(
                 decoration:
@@ -235,22 +239,35 @@ class EditScreen extends StatelessWidget {
                   if (value == null || value.isEmpty) {
                     return 'Ensira uma palavra, por favor';
                   }
-                  return null;
+                  return value;
                 },
+                controller: secondWordController,
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        primary: Color.fromARGB(255, 81, 68, 255)),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text(
-                      'Enviar',
-                      style: TextStyle(fontSize: 16),
-                    )),
-              )
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20.0),
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: Color.fromARGB(255, 81, 68, 255),
+                          fixedSize: Size(100, 40)),
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                content: Text(firstWordController.text),
+                              );
+                            });
+
+                        //Navigator.pop(context);
+                      },
+                      child: const Text(
+                        'Enviar',
+                        style: TextStyle(fontSize: 16),
+                      )),
+                ),
+              ),
+              Text(firstWordController.text)
             ],
           )),
         ));
