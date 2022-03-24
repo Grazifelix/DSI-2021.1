@@ -23,7 +23,6 @@ class MyApp extends StatelessWidget {
         '/': (context) => const RandomWords(),
         '/edit': ((context) => const EditScreen())
       },
-      //home: RandomWords(),
     );
   }
 }
@@ -206,23 +205,54 @@ class _RandomWordsState extends State<RandomWords> {
 
 class EditScreen extends StatelessWidget {
   const EditScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Second Screen'),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          // Within the SecondScreen widget
-          onPressed: () {
-            // Navigate back to the first screen by popping the current route
-            // off the stack.
-            Navigator.pop(context);
-          },
-          child: const Text('Go back!'),
+        appBar: AppBar(
+          title: const Text('Second Screen'),
         ),
-      ),
-    );
+        body: Container(
+          padding: EdgeInsets.all(20.0),
+          child: Form(
+              child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              TextFormField(
+                decoration: const InputDecoration(
+                    hintText: "Ensira a primeira palavra"),
+                validator: (String? value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Ensira uma palavra, por favor';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                decoration:
+                    const InputDecoration(hintText: "Ensira a segunda palavra"),
+                validator: (String? value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Ensira uma palavra, por favor';
+                  }
+                  return null;
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        primary: Color.fromARGB(255, 81, 68, 255)),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      'Enviar',
+                      style: TextStyle(fontSize: 16),
+                    )),
+              )
+            ],
+          )),
+        ));
   }
 }
