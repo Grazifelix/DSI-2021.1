@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
+import 'package:startup_namer/edit_page.dart';
 
 void main() {
   runApp(const MyApp());
+}
+
+class ParPalavra {
+  String firstWord;
+  String secondWord;
+
+  ParPalavra(this.firstWord, this.secondWord);
 }
 
 class MyApp extends StatelessWidget {
@@ -20,8 +28,8 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => const RandomWords(),
-        '/edit': ((context) => const EditScreen())
+        '/': (context) => RandomWords(),
+        '/Edit': (context) => EditScreen()
       },
     );
   }
@@ -159,7 +167,8 @@ class _RandomWordsState extends State<RandomWords> {
             style: _biggerFont,
           ),
           onTap: () {
-            Navigator.pushNamed(context, '/edit');
+            Navigator.pushNamed(context, '/Edit',
+                arguments: _suggestions[index]);
           },
           trailing: IconButton(
               icon: Icon(alreadySaved ? Icons.favorite : Icons.favorite_border,
@@ -173,6 +182,8 @@ class _RandomWordsState extends State<RandomWords> {
                     _saved.remove(_suggestions[index]);
                   } else {
                     _saved.add(_suggestions[index]);
+                    debugPrint(_suggestions[index].first);
+                    debugPrint(_suggestions[index].second);
                   }
                 });
               }),
@@ -192,6 +203,7 @@ class _RandomWordsState extends State<RandomWords> {
       itemCount: _suggestions.length,
       itemBuilder: (context, index) {
         //final index = i ~/ 2;
+        final int index = _suggestions.length;
         if (index >= _suggestions.length) {
           _suggestions.addAll(generateWordPairs().take(10));
         }
@@ -200,76 +212,5 @@ class _RandomWordsState extends State<RandomWords> {
         );
       },
     );
-  }
-}
-
-class EditScreen extends StatelessWidget {
-  const EditScreen({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    TextEditingController firstWordController = TextEditingController();
-    TextEditingController secondWordController = TextEditingController();
-
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Second Screen'),
-        ),
-        body: Container(
-          padding: EdgeInsets.all(20.0),
-          child: Form(
-              child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              TextFormField(
-                decoration: const InputDecoration(
-                    hintText: "Ensira a primeira palavra"),
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Ensira uma palavra, por favor';
-                  }
-                  return null;
-                },
-                controller: firstWordController,
-              ),
-              TextFormField(
-                decoration:
-                    const InputDecoration(hintText: "Ensira a segunda palavra"),
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Ensira uma palavra, por favor';
-                  }
-                  return value;
-                },
-                controller: secondWordController,
-              ),
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20.0),
-                  child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          primary: Color.fromARGB(255, 81, 68, 255),
-                          fixedSize: Size(100, 40)),
-                      onPressed: () {
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                content: Text(firstWordController.text),
-                              );
-                            });
-
-                        //Navigator.pop(context);
-                      },
-                      child: const Text(
-                        'Enviar',
-                        style: TextStyle(fontSize: 16),
-                      )),
-                ),
-              ),
-              Text(firstWordController.text)
-            ],
-          )),
-        ));
   }
 }
