@@ -13,6 +13,20 @@ class ParPalavra {
   ParPalavra(this.firstWord, this.secondWord);
 }
 
+class ParPalavraRepository {}
+
+ParPalavraRepository repository = ParPalavraRepository();
+
+List palavraConstrutor() {
+  var result = [];
+  for (var i = 0; i < 20; i++) {
+    WordPair word = WordPair.random();
+    ParPalavra p = ParPalavra(word.first, word.second);
+    result.add(p);
+  }
+  return result;
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -114,6 +128,7 @@ class _RandomWordsState extends State<RandomWords> {
 //Building Suggestions
   Widget _buildSuggestions(bool cardMode) {
     print('list mode changed');
+
     if (cardMode == false) {
       return ListView.builder(
         padding: const EdgeInsets.all(16.0),
@@ -212,5 +227,53 @@ class _RandomWordsState extends State<RandomWords> {
         );
       },
     );
+  }
+}
+
+class EditScreen extends StatelessWidget {
+  const EditScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('Edit Word'),
+        ),
+        body: Container(
+          padding: EdgeInsets.all(20.0),
+          child: Form(
+              child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              TextFormField(
+                decoration: const InputDecoration(
+                    hintText: "Ensira a primeira palavra"),
+              ),
+              TextFormField(
+                keyboardType: TextInputType.text,
+                decoration:
+                    const InputDecoration(hintText: "Ensira a segunda palavra"),
+              ),
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20.0),
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: Color.fromARGB(255, 81, 68, 255),
+                          fixedSize: Size(100, 40)),
+                      onPressed: () {
+                        Navigator.pop(
+                          context,
+                        );
+                      },
+                      child: const Text(
+                        'Enviar',
+                        style: TextStyle(fontSize: 16),
+                      )),
+                ),
+              ),
+            ],
+          )),
+        ));
   }
 }
