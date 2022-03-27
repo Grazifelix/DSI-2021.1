@@ -11,21 +11,28 @@ class ParPalavra {
   String secondWord;
 
   ParPalavra(this.firstWord, this.secondWord);
+
+  List ParPalavraFactory(int num) {
+    var result = [];
+    for (var i = 0; i < num; i++) {
+      WordPair word = WordPair.random();
+      ParPalavra p = ParPalavra(word.first, word.second);
+      result.add(p);
+    }
+    return result;
+  }
+
+  String asPascalCase() {
+    return "${firstWord.toUpperCase()}${secondWord.toUpperCase()}";
+  }
 }
 
 class ParPalavraRepository {}
+// abstract class ParPalavraRepository {
+//   Future<List<ParPalavra>> getList();
+// }
 
-ParPalavraRepository repository = ParPalavraRepository();
-
-List palavraConstrutor() {
-  var result = [];
-  for (var i = 0; i < 20; i++) {
-    WordPair word = WordPair.random();
-    ParPalavra p = ParPalavra(word.first, word.second);
-    result.add(p);
-  }
-  return result;
-}
+ParPalavraRepository repositoryParPalavra = ParPalavraRepository();
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -57,8 +64,10 @@ class RandomWords extends StatefulWidget {
 }
 
 class _RandomWordsState extends State<RandomWords> {
+  //final _suggestions = <ParPalavra>[];
   final _suggestions = <WordPair>[];
   final _biggerFont = const TextStyle(fontSize: 18.0);
+  //final _saved = <ParPalavra>[];
   final _saved = <WordPair>[];
   bool cardMode = false;
 
@@ -197,8 +206,6 @@ class _RandomWordsState extends State<RandomWords> {
                     _saved.remove(_suggestions[index]);
                   } else {
                     _saved.add(_suggestions[index]);
-                    debugPrint(_suggestions[index].first);
-                    debugPrint(_suggestions[index].second);
                   }
                 });
               }),
