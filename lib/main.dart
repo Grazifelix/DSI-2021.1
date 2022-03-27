@@ -12,22 +12,41 @@ class ParPalavra {
 
   ParPalavra(this.firstWord, this.secondWord);
 
-  List ParPalavraFactory(int num) {
+  // final suggestions = <ParPalavra>[];
+
+  // void ParPalavraFactory(int num) {
+  //   for (int i = 0; i < num; i++) {
+  //     //WordPair word = WordPair.random();
+  //     WordPair word = generateWordPairs().first;
+  //     ParPalavra p = ParPalavra(word.first, word.second);
+  //     suggestions.add(p);
+  //   }
+  // }
+
+  // List getAll() {
+  //   return suggestions;
+  // }
+
+  static ParPalavraFactory(int num) {
     var result = [];
-    for (var i = 0; i < num; i++) {
-      WordPair word = WordPair.random();
+    for (int i = 0; i < num; i++) {
+      //WordPair word = WordPair.random();
+      WordPair word = generateWordPairs().first;
       ParPalavra p = ParPalavra(word.first, word.second);
       result.add(p);
     }
     return result;
   }
 
-  String asPascalCase() {
-    return "${firstWord.toUpperCase()}${secondWord.toUpperCase()}";
+  String CreateAsPascalCase() {
+    return "${firstWord[0].toUpperCase() + firstWord.substring(1)}${secondWord[0].toUpperCase() + secondWord.substring(1)}";
   }
+
+  late final asPascalCase = CreateAsPascalCase();
 }
 
 class ParPalavraRepository {}
+
 // abstract class ParPalavraRepository {
 //   Future<List<ParPalavra>> getList();
 // }
@@ -64,11 +83,12 @@ class RandomWords extends StatefulWidget {
 }
 
 class _RandomWordsState extends State<RandomWords> {
+  final _suggestions = ParPalavra.ParPalavraFactory(20);
   //final _suggestions = <ParPalavra>[];
-  final _suggestions = <WordPair>[];
+  //final _suggestions = <WordPair>[];
   final _biggerFont = const TextStyle(fontSize: 18.0);
-  //final _saved = <ParPalavra>[];
-  final _saved = <WordPair>[];
+  final _saved = <ParPalavra>[];
+  //final _saved = <WordPair>[];
   bool cardMode = false;
 
   @override
@@ -108,7 +128,7 @@ class _RandomWordsState extends State<RandomWords> {
     Navigator.of(context).push(
       MaterialPageRoute<void>(builder: (BuildContext context) {
         final tiles = _saved.map(
-          (WordPair pair) {
+          (ParPalavra pair) {
             return ListTile(
               title: Text(
                 pair.asPascalCase,
@@ -145,9 +165,9 @@ class _RandomWordsState extends State<RandomWords> {
           if (i.isOdd) return const Divider();
 
           final index = i ~/ 2;
-          if (index >= _suggestions.length) {
-            _suggestions.addAll(generateWordPairs().take(10));
-          }
+          // if (index >= _suggestions.length) {
+          //   _suggestions.addAll(generateWordPairs().take(10));
+          // }
           return _buildRow(_suggestions[index], index);
         },
       );
@@ -157,7 +177,7 @@ class _RandomWordsState extends State<RandomWords> {
   }
 
 //Building list Rows
-  Widget _buildRow(WordPair pair, int index) {
+  Widget _buildRow(ParPalavra pair, int index) {
     final alreadySaved = _saved.contains(_suggestions[index]);
     var color = Colors.transparent;
     final item = pair
@@ -225,10 +245,10 @@ class _RandomWordsState extends State<RandomWords> {
       itemCount: _suggestions.length,
       itemBuilder: (context, index) {
         //final index = i ~/ 2;
-        final int index = _suggestions.length;
-        if (index >= _suggestions.length) {
-          _suggestions.addAll(generateWordPairs().take(10));
-        }
+        // final int index = _suggestions.length;
+        // if (index >= _suggestions.length) {
+        //   _suggestions.addAll(generateWordPairs().take(10));
+        // }
         return Column(
           children: [_buildRow(_suggestions[index], index)],
         );
