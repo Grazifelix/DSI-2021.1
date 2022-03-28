@@ -107,7 +107,9 @@ class _RandomWordsState extends State<RandomWords> {
               icon: Icon(Icons.auto_fix_normal_outlined),
             ),
             IconButton(
-              onPressed: (() {}),
+              onPressed: (() {
+                Navigator.pushNamed(context, '/edit');
+              }),
               icon: const Icon(
                 Icons.plus_one,
               ),
@@ -243,11 +245,6 @@ class _RandomWordsState extends State<RandomWords> {
           childAspectRatio: 8),
       itemCount: repositoryParPalavra._suggestions.length,
       itemBuilder: (context, index) {
-        //final index = i ~/ 2;
-        // final int index = _suggestions.length;
-        // if (index >= _suggestions.length) {
-        //   _suggestions.addAll(generateWordPairs().take(10));
-        // }
         return Column(
           children: [
             _buildRow(repositoryParPalavra._suggestions[index], index)
