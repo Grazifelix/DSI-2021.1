@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
 import 'package:startup_namer/edit_page.dart';
@@ -7,35 +9,15 @@ void main() {
 }
 
 class ParPalavra {
-  String firstWord;
-  String secondWord;
+  String firstWord = '';
+  String secondWord = '';
 
   ParPalavra(this.firstWord, this.secondWord);
 
-  // final suggestions = <ParPalavra>[];
-
-  // void ParPalavraFactory(int num) {
-  //   for (int i = 0; i < num; i++) {
-  //     //WordPair word = WordPair.random();
-  //     WordPair word = generateWordPairs().first;
-  //     ParPalavra p = ParPalavra(word.first, word.second);
-  //     suggestions.add(p);
-  //   }
-  // }
-
-  // List getAll() {
-  //   return suggestions;
-  // }
-
-  static ParPalavraFactory(int num) {
-    var result = [];
-    for (int i = 0; i < num; i++) {
-      //WordPair word = WordPair.random();
-      WordPair word = generateWordPairs().first;
-      ParPalavra p = ParPalavra(word.first, word.second);
-      result.add(p);
-    }
-    return result;
+  factory ParPalavra.second() {
+    WordPair word = generateWordPairs().first;
+    ParPalavra p = ParPalavra(word.first, word.second);
+    return p;
   }
 
   String CreateAsPascalCase() {
@@ -45,13 +27,26 @@ class ParPalavra {
   late final asPascalCase = CreateAsPascalCase();
 }
 
-class ParPalavraRepository {}
+class ParPalavraRepository {
+  final _suggestions = <ParPalavra>[];
 
-// abstract class ParPalavraRepository {
-//   Future<List<ParPalavra>> getList();
-// }
+  ParPalavraRepository() {
+    CreateParPalavra(20);
+  }
 
-ParPalavraRepository repositoryParPalavra = ParPalavraRepository();
+  CreateParPalavra(int num) {
+    for (int i = 0; i < num; i++) {
+      _suggestions.add(ParPalavra.second());
+    }
+    getAll();
+  }
+
+  List getAll() {
+    return _suggestions;
+  }
+}
+
+ParPalavraRepository repositoryParPalavra = new ParPalavraRepository();
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -83,8 +78,7 @@ class RandomWords extends StatefulWidget {
 }
 
 class _RandomWordsState extends State<RandomWords> {
-  final _suggestions = ParPalavra.ParPalavraFactory(20);
-  //final _suggestions = <ParPalavra>[];
+  List<ParPalavra> _suggestions = ParPalavraRepository()._suggestions;
   //final _suggestions = <WordPair>[];
   final _biggerFont = const TextStyle(fontSize: 18.0);
   final _saved = <ParPalavra>[];
@@ -262,6 +256,7 @@ class EditScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ParPalavra word = ModalRoute.of(context)!.settings.arguments as ParPalavra;
     return Scaffold(
         appBar: AppBar(
           title: const Text('Edit Word'),
@@ -273,13 +268,16 @@ class EditScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               TextFormField(
+                initialValue: word.firstWord,
                 decoration: const InputDecoration(
                     hintText: "Ensira a primeira palavra"),
+                onChanged: (value) => word.firstWord = value,
               ),
               TextFormField(
                 keyboardType: TextInputType.text,
                 decoration:
                     const InputDecoration(hintText: "Ensira a segunda palavra"),
+                onChanged: (value) => word.secondWord = value,
               ),
               Center(
                 child: Padding(
@@ -289,9 +287,7 @@ class EditScreen extends StatelessWidget {
                           primary: Color.fromARGB(255, 81, 68, 255),
                           fixedSize: Size(100, 40)),
                       onPressed: () {
-                        Navigator.pop(
-                          context,
-                        );
+                        Navigator.pop(context);
                       },
                       child: const Text(
                         'Enviar',
