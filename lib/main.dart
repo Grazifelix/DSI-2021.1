@@ -106,6 +106,13 @@ class _RandomWordsState extends State<RandomWords> {
                   cardMode ? 'List Vizualization' : 'Card Mode Vizualization',
               icon: Icon(Icons.auto_fix_normal_outlined),
             ),
+            IconButton(
+              onPressed: (() {}),
+              icon: const Icon(
+                Icons.plus_one,
+              ),
+              tooltip: "Add a new word",
+            )
           ],
         ),
         body: _buildSuggestions(cardMode));
