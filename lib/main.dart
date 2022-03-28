@@ -1,5 +1,4 @@
 import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
 import 'package:startup_namer/edit_page.dart';
@@ -38,11 +37,6 @@ class ParPalavraRepository {
     for (int i = 0; i < num; i++) {
       _suggestions.add(ParPalavra.second());
     }
-    getAll();
-  }
-
-  List getAll() {
-    return _suggestions;
   }
 }
 
@@ -63,14 +57,15 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => RandomWords(),
-        '/Edit': (context) => EditScreen()
+        RandomWords.routeName: (context) => RandomWords(),
+        EditScreen.routeName: (context) => EditScreen()
       },
     );
   }
 }
 
 class RandomWords extends StatefulWidget {
+  static const routeName = '/';
   const RandomWords({Key? key}) : super(key: key);
 
   @override
@@ -78,7 +73,6 @@ class RandomWords extends StatefulWidget {
 }
 
 class _RandomWordsState extends State<RandomWords> {
-  List<ParPalavra> _suggestions = ParPalavraRepository()._suggestions;
   //final _suggestions = <WordPair>[];
   final _biggerFont = const TextStyle(fontSize: 18.0);
   final _saved = <ParPalavra>[];
@@ -162,7 +156,10 @@ class _RandomWordsState extends State<RandomWords> {
           // if (index >= _suggestions.length) {
           //   _suggestions.addAll(generateWordPairs().take(10));
           // }
-          return _buildRow(_suggestions[index], index);
+          if (index >= repositoryParPalavra._suggestions.length) {
+            repositoryParPalavra.CreateParPalavra(10);
+          }
+          return _buildRow(repositoryParPalavra._suggestions[index], index);
         },
       );
     } else {
@@ -172,7 +169,8 @@ class _RandomWordsState extends State<RandomWords> {
 
 //Building list Rows
   Widget _buildRow(ParPalavra pair, int index) {
-    final alreadySaved = _saved.contains(_suggestions[index]);
+    final alreadySaved =
+        _saved.contains(repositoryParPalavra._suggestions[index]);
     var color = Colors.transparent;
     final item = pair
         .asPascalCase; //variável que verifica se o par de palavras já está dentro do conjunto _saved.
@@ -182,9 +180,9 @@ class _RandomWordsState extends State<RandomWords> {
         onDismissed: (direction) {
           setState(() {
             if (alreadySaved) {
-              _saved.remove(_suggestions[index]);
+              _saved.remove(repositoryParPalavra._suggestions[index]);
             }
-            _suggestions.removeAt(index);
+            repositoryParPalavra._suggestions.removeAt(index);
           });
         },
         background: Container(
@@ -201,12 +199,12 @@ class _RandomWordsState extends State<RandomWords> {
         ),
         child: ListTile(
           title: Text(
-            _suggestions[index].asPascalCase,
+            repositoryParPalavra._suggestions[index].asPascalCase,
             style: _biggerFont,
           ),
           onTap: () {
-            Navigator.pushNamed(context, '/Edit',
-                arguments: _suggestions[index]);
+            Navigator.pushNamed(context, '/edit',
+                arguments: repositoryParPalavra._suggestions[index]);
           },
           trailing: IconButton(
               icon: Icon(alreadySaved ? Icons.favorite : Icons.favorite_border,
@@ -217,9 +215,9 @@ class _RandomWordsState extends State<RandomWords> {
               onPressed: () {
                 setState(() {
                   if (alreadySaved) {
-                    _saved.remove(_suggestions[index]);
+                    _saved.remove(repositoryParPalavra._suggestions[index]);
                   } else {
-                    _saved.add(_suggestions[index]);
+                    _saved.add(repositoryParPalavra._suggestions[index]);
                   }
                 });
               }),
@@ -236,7 +234,7 @@ class _RandomWordsState extends State<RandomWords> {
           crossAxisSpacing: 2,
           mainAxisSpacing: 2,
           childAspectRatio: 8),
-      itemCount: _suggestions.length,
+      itemCount: repositoryParPalavra._suggestions.length,
       itemBuilder: (context, index) {
         //final index = i ~/ 2;
         // final int index = _suggestions.length;
@@ -244,7 +242,9 @@ class _RandomWordsState extends State<RandomWords> {
         //   _suggestions.addAll(generateWordPairs().take(10));
         // }
         return Column(
-          children: [_buildRow(_suggestions[index], index)],
+          children: [
+            _buildRow(repositoryParPalavra._suggestions[index], index)
+          ],
         );
       },
     );
@@ -252,6 +252,7 @@ class _RandomWordsState extends State<RandomWords> {
 }
 
 class EditScreen extends StatelessWidget {
+  static const routeName = '/edit';
   const EditScreen({Key? key}) : super(key: key);
 
   @override
@@ -269,11 +270,13 @@ class EditScreen extends StatelessWidget {
             children: <Widget>[
               TextFormField(
                 initialValue: word.firstWord,
+                keyboardType: TextInputType.text,
                 decoration: const InputDecoration(
                     hintText: "Ensira a primeira palavra"),
                 onChanged: (value) => word.firstWord = value,
               ),
               TextFormField(
+                initialValue: word.secondWord,
                 keyboardType: TextInputType.text,
                 decoration:
                     const InputDecoration(hintText: "Ensira a segunda palavra"),
@@ -287,7 +290,7 @@ class EditScreen extends StatelessWidget {
                           primary: Color.fromARGB(255, 81, 68, 255),
                           fixedSize: Size(100, 40)),
                       onPressed: () {
-                        Navigator.pop(context);
+                        Navigator.popAndPushNamed(context, '/');
                       },
                       child: const Text(
                         'Enviar',
