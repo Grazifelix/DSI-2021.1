@@ -1,7 +1,7 @@
 import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
-import 'package:startup_namer/edit_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,7 +13,7 @@ class ParPalavra {
 
   ParPalavra(this.firstWord, this.secondWord);
 
-  factory ParPalavra.second() {
+  factory ParPalavra.constructor() {
     WordPair word = generateWordPairs().first;
     ParPalavra p = ParPalavra(word.first, word.second);
     return p;
@@ -26,21 +26,33 @@ class ParPalavra {
   late final asPascalCase = CreateAsPascalCase();
 }
 
-class ParPalavraRepository {
+class RepositoryParPalavra {
   final _suggestions = <ParPalavra>[];
 
-  ParPalavraRepository() {
+  RepositoryParPalavra() {
     CreateParPalavra(20);
   }
 
-  CreateParPalavra(int num) {
+  void CreateParPalavra(int num) {
     for (int i = 0; i < num; i++) {
-      _suggestions.add(ParPalavra.second());
+      _suggestions.add(ParPalavra.constructor());
     }
+  }
+
+  List getAll() {
+    return _suggestions;
+  }
+
+  ParPalavra getByIndex(int index) {
+    return _suggestions[index];
+  }
+
+  void removeParPalavra(ParPalavra word) {
+    _suggestions.removeAt(_suggestions.indexOf(word));
   }
 }
 
-ParPalavraRepository repositoryParPalavra = new ParPalavraRepository();
+RepositoryParPalavra repositoryParPalavra = new RepositoryParPalavra();
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -57,33 +69,34 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        RandomWords.routeName: (context) => RandomWords(),
-        EditScreen.routeName: (context) => EditScreen()
+        RandomWords.routeName: (context) => const RandomWords(),
+        EditScreen.routeName: (context) => const EditScreen()
       },
     );
   }
 }
 
 class RandomWords extends StatefulWidget {
-  static const routeName = '/';
   const RandomWords({Key? key}) : super(key: key);
+  static const routeName = '/';
 
   @override
   _RandomWordsState createState() => _RandomWordsState();
 }
 
 class _RandomWordsState extends State<RandomWords> {
-  //final _suggestions = <WordPair>[];
   final _biggerFont = const TextStyle(fontSize: 18.0);
   final _saved = <ParPalavra>[];
-  //final _saved = <WordPair>[];
   bool cardMode = false;
+  bool screenEditMode = false;
+  String nome = "Startup Name Generator";
 
   @override
   Widget build(BuildContext context) {
+    print("widght state");
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Startup Name Generator'),
+          title: Text(nome),
           actions: [
             IconButton(
               icon: const Icon(Icons.list),
@@ -107,13 +120,17 @@ class _RandomWordsState extends State<RandomWords> {
               icon: Icon(Icons.auto_fix_normal_outlined),
             ),
             IconButton(
-              onPressed: (() {
-                Navigator.pushNamed(context, '/edit');
-              }),
-              icon: const Icon(
-                Icons.plus_one,
-              ),
-              tooltip: "Add a new word",
+              icon: const Icon(Icons.plus_one),
+              tooltip: 'Add new word',
+              onPressed: () {
+                screenEditMode = true;
+                setState(() {
+                  Navigator.popAndPushNamed(context, '/edit', arguments: {
+                    'parPalavra': repositoryParPalavra.getAll(),
+                    'palavra': screenEditMode
+                  });
+                });
+              },
             )
           ],
         ),
@@ -160,15 +177,14 @@ class _RandomWordsState extends State<RandomWords> {
         padding: const EdgeInsets.all(16.0),
         itemBuilder: (context, i) {
           if (i.isOdd) return const Divider();
-
+          print("list view");
           final index = i ~/ 2;
-          // if (index >= _suggestions.length) {
-          //   _suggestions.addAll(generateWordPairs().take(10));
-          // }
-          if (index >= repositoryParPalavra._suggestions.length) {
+
+          if (index >= repositoryParPalavra.getAll().length) {
             repositoryParPalavra.CreateParPalavra(10);
+            print("create word");
           }
-          return _buildRow(repositoryParPalavra._suggestions[index], index);
+          return _buildRow(repositoryParPalavra.getByIndex(index));
         },
       );
     } else {
@@ -177,21 +193,19 @@ class _RandomWordsState extends State<RandomWords> {
   }
 
 //Building list Rows
-  Widget _buildRow(ParPalavra pair, int index) {
-    final alreadySaved =
-        _saved.contains(repositoryParPalavra._suggestions[index]);
+  Widget _buildRow(ParPalavra pair) {
+    print("build row");
+    final alreadySaved = _saved.contains(pair);
     var color = Colors.transparent;
-    final item = pair
-        .asPascalCase; //variável que verifica se o par de palavras já está dentro do conjunto _saved.
     return Dismissible(
-        key: Key(item),
+        key: Key(pair.toString()),
         direction: DismissDirection.endToStart,
         onDismissed: (direction) {
           setState(() {
             if (alreadySaved) {
-              _saved.remove(repositoryParPalavra._suggestions[index]);
+              _saved.remove(pair);
             }
-            repositoryParPalavra._suggestions.removeAt(index);
+            repositoryParPalavra.removeParPalavra(pair);
           });
         },
         background: Container(
@@ -207,61 +221,77 @@ class _RandomWordsState extends State<RandomWords> {
           ),
         ),
         child: ListTile(
-          title: Text(
-            repositoryParPalavra._suggestions[index].asPascalCase,
-            style: _biggerFont,
-          ),
-          onTap: () {
-            Navigator.pushNamed(context, '/edit',
-                arguments: repositoryParPalavra._suggestions[index]);
-          },
-          trailing: IconButton(
-              icon: Icon(alreadySaved ? Icons.favorite : Icons.favorite_border,
-                  color: alreadySaved ? Color.fromARGB(255, 81, 68, 255) : null,
-                  semanticLabel: alreadySaved ? 'Remove from saved' : 'Save'),
-              tooltip: "Favorite",
-              hoverColor: color,
-              onPressed: () {
-                setState(() {
-                  if (alreadySaved) {
-                    _saved.remove(repositoryParPalavra._suggestions[index]);
-                  } else {
-                    _saved.add(repositoryParPalavra._suggestions[index]);
-                  }
+            title: Text(
+              pair.asPascalCase,
+              style: _biggerFont,
+            ),
+            trailing: IconButton(
+                icon: Icon(
+                    alreadySaved ? Icons.favorite : Icons.favorite_border,
+                    color:
+                        alreadySaved ? Color.fromARGB(255, 81, 68, 255) : null,
+                    semanticLabel: alreadySaved ? 'Remove from saved' : 'Save'),
+                tooltip: "Favorite",
+                hoverColor: color,
+                onPressed: () {
+                  setState(() {
+                    if (alreadySaved) {
+                      _saved.remove(pair);
+                    } else {
+                      _saved.add(pair);
+                    }
+                  });
+                }),
+            onTap: () {
+              setState(() {
+                Navigator.popAndPushNamed(context, '/edit', arguments: {
+                  'parPalavra': repositoryParPalavra.getAll(),
+                  'palavra': pair,
                 });
-              }),
-        ));
+              });
+            }));
   }
 
 //Building cards vizualization
   Widget _cardVizualizaton() {
     print('card mode changed');
     return GridView.builder(
-      padding: EdgeInsets.all(12),
+      padding: EdgeInsets.all(10),
       gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           crossAxisSpacing: 2,
           mainAxisSpacing: 2,
           childAspectRatio: 8),
-      itemCount: repositoryParPalavra._suggestions.length,
       itemBuilder: (context, index) {
+        if (index >= repositoryParPalavra.getAll().length) {
+          repositoryParPalavra.CreateParPalavra(10);
+        }
         return Column(
-          children: [
-            _buildRow(repositoryParPalavra._suggestions[index], index)
-          ],
+          children: [_buildRow(repositoryParPalavra.getByIndex(index))],
         );
       },
     );
   }
 }
 
-class EditScreen extends StatelessWidget {
-  static const routeName = '/edit';
+class EditScreen extends StatefulWidget {
   const EditScreen({Key? key}) : super(key: key);
+  static const routeName = '/edit';
 
   @override
+  State<EditScreen> createState() => _EditScreenState();
+}
+
+class _EditScreenState extends State<EditScreen> {
+  @override
   Widget build(BuildContext context) {
-    ParPalavra word = ModalRoute.of(context)!.settings.arguments as ParPalavra;
+    final args = (ModalRoute.of(context)?.settings.arguments ??
+        <List, ParPalavra>{}) as Map;
+    var palavra = args['palavra'];
+    List<ParPalavra> ParPalavraList = args['parPalavra'];
+    final TextEditingController wordOne = TextEditingController();
+    final TextEditingController wordTwo = TextEditingController();
+
     return Scaffold(
         appBar: AppBar(
           title: const Text('Edit Word'),
@@ -273,18 +303,14 @@ class EditScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               TextFormField(
-                initialValue: word.firstWord,
                 keyboardType: TextInputType.text,
-                decoration: const InputDecoration(
-                    hintText: "Ensira a primeira palavra"),
-                onChanged: (value) => word.firstWord = value,
+                decoration: const InputDecoration(hintText: "Type First Word"),
+                controller: wordOne,
               ),
               TextFormField(
-                initialValue: word.secondWord,
                 keyboardType: TextInputType.text,
-                decoration:
-                    const InputDecoration(hintText: "Ensira a segunda palavra"),
-                onChanged: (value) => word.secondWord = value,
+                decoration: const InputDecoration(hintText: "Type Second Word"),
+                controller: wordTwo,
               ),
               Center(
                 child: Padding(
@@ -294,7 +320,18 @@ class EditScreen extends StatelessWidget {
                           primary: Color.fromARGB(255, 81, 68, 255),
                           fixedSize: Size(100, 40)),
                       onPressed: () {
-                        Navigator.popAndPushNamed(context, '/');
+                        setState(() {
+                          if (palavra == true) {
+                            ParPalavraList.add(
+                                ParPalavra(wordOne.text, wordTwo.text));
+                            palavra == false;
+                          } else {
+                            ParPalavraList[ParPalavraList.indexOf(palavra)] =
+                                ParPalavra(wordOne.text, wordTwo.text);
+                          }
+
+                          Navigator.popAndPushNamed(context, '/');
+                        });
                       },
                       child: const Text(
                         'Enviar',
