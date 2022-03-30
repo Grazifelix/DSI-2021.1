@@ -1,8 +1,5 @@
-import 'dart:html';
-import 'dart:js_util';
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
-import 'package:startup_namer/edit_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -26,32 +23,6 @@ class ParPalavra {
 
   late final asPascalCase = CreateAsPascalCase();
 }
-
-// abstract class ParPalavraRepository {
-//   final _suggestions = <ParPalavra>[];
-
-//   List<ParPalavra> getAll();
-
-// }
-
-// class CallParPalavraRepository implements ParPalavraRepository {
-
-//   CallParPalavraRepository(){
-//     CreateParPalavra(20);
-//   }
-
-//   CreateParPalavra(int num) {
-//     for (int i = 0; i < num; i++) {
-//       _suggestions.add(ParPalavra.constructor());
-//     }
-
-//   @override
-//   List<ParPalavra> getAll() {
-//     return _suggestions;
-//   }
-
-// }
-// }
 
 class RepositoryParPalavra {
   final _suggestions = <ParPalavra>[];
@@ -79,8 +50,6 @@ class RepositoryParPalavra {
   }
 }
 
-//CallParPalavraRepository repositoryParPalavra = new CallParPalavraRepository();
-
 RepositoryParPalavra repositoryParPalavra = new RepositoryParPalavra();
 
 class MyApp extends StatelessWidget {
@@ -98,8 +67,8 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        RandomWords.routeName: (context) => RandomWords(),
-        EditScreen.routeName: (context) => EditScreen()
+        RandomWords.routeName: (context) => const RandomWords(),
+        EditScreen.routeName: (context) => const EditScreen()
       },
     );
   }
@@ -236,29 +205,35 @@ class _RandomWordsState extends State<RandomWords> {
           ),
         ),
         child: ListTile(
-          title: Text(
-            pair.asPascalCase,
-            style: _biggerFont,
-          ),
-          onTap: () {
-            Navigator.pushNamed(context, '/edit', arguments: pair);
-          },
-          trailing: IconButton(
-              icon: Icon(alreadySaved ? Icons.favorite : Icons.favorite_border,
-                  color: alreadySaved ? Color.fromARGB(255, 81, 68, 255) : null,
-                  semanticLabel: alreadySaved ? 'Remove from saved' : 'Save'),
-              tooltip: "Favorite",
-              hoverColor: color,
-              onPressed: () {
-                setState(() {
-                  if (alreadySaved) {
-                    _saved.remove(pair);
-                  } else {
-                    _saved.add(pair);
-                  }
+            title: Text(
+              pair.asPascalCase,
+              style: _biggerFont,
+            ),
+            trailing: IconButton(
+                icon: Icon(
+                    alreadySaved ? Icons.favorite : Icons.favorite_border,
+                    color:
+                        alreadySaved ? Color.fromARGB(255, 81, 68, 255) : null,
+                    semanticLabel: alreadySaved ? 'Remove from saved' : 'Save'),
+                tooltip: "Favorite",
+                hoverColor: color,
+                onPressed: () {
+                  setState(() {
+                    if (alreadySaved) {
+                      _saved.remove(pair);
+                    } else {
+                      _saved.add(pair);
+                    }
+                  });
+                }),
+            onTap: () {
+              setState(() {
+                Navigator.popAndPushNamed(context, '/edit', arguments: {
+                  'parPalavra': repositoryParPalavra.getAll(),
+                  'palavra': pair
                 });
-              }),
-        ));
+              });
+            }));
   }
 
 //Building cards vizualization
@@ -271,7 +246,6 @@ class _RandomWordsState extends State<RandomWords> {
           crossAxisSpacing: 2,
           mainAxisSpacing: 2,
           childAspectRatio: 8),
-      //itemCount: repositoryParPalavra._suggestions.length,
       itemBuilder: (context, index) {
         if (index >= repositoryParPalavra.getAll().length) {
           repositoryParPalavra.CreateParPalavra(10);
@@ -285,8 +259,8 @@ class _RandomWordsState extends State<RandomWords> {
 }
 
 class EditScreen extends StatefulWidget {
-  static const routeName = '/edit';
   const EditScreen({Key? key}) : super(key: key);
+  static const routeName = '/edit';
 
   @override
   State<EditScreen> createState() => _EditScreenState();
@@ -295,7 +269,14 @@ class EditScreen extends StatefulWidget {
 class _EditScreenState extends State<EditScreen> {
   @override
   Widget build(BuildContext context) {
-    final word = ModalRoute.of(context)!.settings.arguments as ParPalavra;
+    final args = (ModalRoute.of(context)?.settings.arguments ??
+        <List, ParPalavra>{}) as Map;
+    ParPalavra palavra = args['palavra'];
+    List<ParPalavra> ParPalavraList = args['parPalavra'];
+
+    final TextEditingController wordOne = TextEditingController();
+    final TextEditingController wordTwo = TextEditingController();
+
     return Scaffold(
         appBar: AppBar(
           title: const Text('Edit Word'),
@@ -307,16 +288,14 @@ class _EditScreenState extends State<EditScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               TextFormField(
-                initialValue: word.firstWord,
                 keyboardType: TextInputType.text,
                 decoration: const InputDecoration(hintText: "Type First Word"),
-                onChanged: (value) => word.firstWord = value.toString(),
+                controller: wordOne,
               ),
               TextFormField(
-                initialValue: word.secondWord,
                 keyboardType: TextInputType.text,
                 decoration: const InputDecoration(hintText: "Type Second Word"),
-                onChanged: (value) => word.secondWord = value.toString(),
+                controller: wordTwo,
               ),
               Center(
                 child: Padding(
@@ -326,12 +305,10 @@ class _EditScreenState extends State<EditScreen> {
                           primary: Color.fromARGB(255, 81, 68, 255),
                           fixedSize: Size(100, 40)),
                       onPressed: () {
-                        print(word.secondWord);
-                        print(word.firstWord);
                         setState(() {
-                          //word = ParPalavra(word.firstWord, word.secondWord);
-                          print(word);
-                          Navigator.pop(context, word);
+                          ParPalavraList[ParPalavraList.indexOf(palavra)] =
+                              ParPalavra(wordOne.text, wordTwo.text);
+                          Navigator.popAndPushNamed(context, '/');
                         });
                       },
                       child: const Text(
