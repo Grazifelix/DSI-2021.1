@@ -154,7 +154,7 @@ class _RandomWordsState extends State<RandomWords> {
     final alreadySaved = _saved.contains(pair);
     var color = Colors.transparent;
     return Dismissible(
-        key: Key(pair.toString()),
+        key: UniqueKey(),
         direction: DismissDirection.endToStart,
         onDismissed: (direction) {
           setState(() {

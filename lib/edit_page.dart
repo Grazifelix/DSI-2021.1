@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'ParPalavra.dart';
 
-//EditScreen Class
 class EditScreen extends StatefulWidget {
   const EditScreen({Key? key}) : super(key: key);
   static const routeName = '/edit';

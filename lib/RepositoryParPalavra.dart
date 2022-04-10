@@ -1,8 +1,9 @@
 import 'package:startup_namer/ParPalavra.dart';
 
 class RepositoryParPalavra {
-  final _suggestions = <ParPalavra>[];
+  final _suggestions = <ParPalavra>[]; //list of par palavra type words
 
+//constructor of repository that initialize with a function call to create twenty new words.
   RepositoryParPalavra() {
     CreateParPalavra(20);
   }
