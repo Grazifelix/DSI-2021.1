@@ -1,11 +1,23 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:english_words/english_words.dart';
 import 'package:startup_namer/RepositoryParPalavra.dart';
 import 'edit_page.dart';
 import 'ParPalavra.dart';
 
-void main() {
+void main() async {
   runApp(const MyApp());
+  await Firebase.initializeApp(
+      options: FirebaseOptions(
+          apiKey: 'AIzaSyCzmnvA94s82lSFusEzda5slCznLaifmtc',
+          appId: '1:994678314799:android:654265b77b225b653cf3da',
+          messagingSenderId: "994678314799",
+          projectId: 'startupnamer-be6b4'));
+
+  FirebaseFirestore.instance
+      .collection('test')
+      .doc()
+      .set({'ParPalavra': 'Olá mundo'});
 }
 
 RepositoryParPalavra repositoryParPalavra = new RepositoryParPalavra();
@@ -42,7 +54,7 @@ class RandomWords extends StatefulWidget {
 
 class _RandomWordsState extends State<RandomWords> {
   final _biggerFont = const TextStyle(fontSize: 18.0);
-  final _saved = <ParPalavra>[];
+  final _saved = <ParPalavra>[]; //remover para o repositorio
   bool cardMode = false;
   bool screenEditMode = false;
   String nome = "Startup Name Generator";
@@ -81,7 +93,7 @@ class _RandomWordsState extends State<RandomWords> {
               onPressed: () {
                 screenEditMode = true;
                 setState(() {
-                  Navigator.popAndPushNamed(context, '/edit', arguments: {
+                  Navigator.pushNamed(context, '/edit', arguments: {
                     'parPalavra': repositoryParPalavra.getAll(),
                     'palavra': screenEditMode
                   });
@@ -200,7 +212,7 @@ class _RandomWordsState extends State<RandomWords> {
                 }),
             onTap: () {
               setState(() {
-                Navigator.popAndPushNamed(context, '/edit', arguments: {
+                Navigator.pushNamed(context, '/edit', arguments: {
                   'parPalavra': repositoryParPalavra.getAll(),
                   'palavra': pair,
                 });

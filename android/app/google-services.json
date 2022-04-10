@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "994678314799",
+    "project_id": "startupnamer-be6b4",
+    "storage_bucket": "startupnamer-be6b4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:994678314799:android:654265b77b225b653cf3da",
+        "android_client_info": {
+          "package_name": "com.example.startup_namer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "994678314799-4jbl9fdok9gp54dvk6aupg7d2naddg2v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzmnvA94s82lSFusEzda5slCznLaifmtc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "994678314799-4jbl9fdok9gp54dvk6aupg7d2naddg2v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
